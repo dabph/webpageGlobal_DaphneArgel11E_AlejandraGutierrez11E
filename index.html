@@ -1,14 +1,275 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Hypothesis Testing Tool</title>
-<link rel="stylesheet" href="style.css"></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hypothesis Testing Tool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-<h1>Hypothesis Testing Tool</h1>
-<p>Manual mode</p>
-<label>z statistic <input id="z" type="number" value="1.96" step="0.1"></label>
-<button onclick="calc()">Calculate</button>
-<div id="out"></div>
-<hr>
-<p>CSV mode</p>
-<input type="file" id="csv">
-<script src="script.js"></script>
-</body></html>
+  <header class="site-header">
+    <nav class="topbar" aria-label="Main navigation">
+      <div>
+        <p class="eyebrow">High School Statistics Project</p>
+        <h1>Hypothesis Testing Tool</h1>
+        <p class="students">Daphne Argel 11E · Alejandra Gutierrez 11E</p>
+      </div>
+      <div class="mode-tabs" role="tablist" aria-label="Project modes">
+        <button class="tab-button active" id="manualTab" type="button" role="tab" aria-selected="true" aria-controls="manualMode">C8 Manual Mode</button>
+        <button class="tab-button" id="csvTab" type="button" role="tab" aria-selected="false" aria-controls="csvMode">C9 CSV Mode</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="mode-panel active" id="manualMode" role="tabpanel" aria-labelledby="manualTab">
+      <div class="section-heading">
+        <p class="eyebrow">C8 Manual Mode</p>
+        <h2>Interactive Hypothesis Testing Calculator</h2>
+      </div>
+
+      <div class="app-grid">
+        <section class="card controls-card" aria-label="Manual calculator inputs">
+          <div class="card-header">
+            <h3>Test Settings</h3>
+            <p>Adjust the values to update the test instantly.</p>
+          </div>
+
+          <div class="segmented" aria-label="Test type">
+            <button class="segment active" type="button" data-manual-test="mean">Mean Test</button>
+            <button class="segment" type="button" data-manual-test="proportion">Proportion Test</button>
+          </div>
+
+          <label class="field">
+            <span>Test direction</span>
+            <select id="manualDirection">
+              <option value="left">Left-tailed</option>
+              <option value="right" selected>Right-tailed</option>
+              <option value="two">Two-tailed</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Significance level alpha</span>
+            <select id="manualAlpha">
+              <option value="0.10">0.10</option>
+              <option value="0.05" selected>0.05</option>
+              <option value="0.01">0.01</option>
+            </select>
+          </label>
+
+          <div id="meanControls">
+            <div class="range-field">
+              <div class="range-label">
+                <label for="benchmarkMeanRange">Benchmark mean</label>
+                <input id="benchmarkMeanNumber" type="number" min="0" max="200" step="0.1" value="50">
+              </div>
+              <input id="benchmarkMeanRange" type="range" min="0" max="200" step="0.1" value="50">
+            </div>
+
+            <div class="range-field">
+              <div class="range-label">
+                <label for="sampleMeanRange">Sample mean</label>
+                <input id="sampleMeanNumber" type="number" min="0" max="200" step="0.1" value="54">
+              </div>
+              <input id="sampleMeanRange" type="range" min="0" max="200" step="0.1" value="54">
+            </div>
+
+            <div class="range-field">
+              <div class="range-label">
+                <label for="standardDeviationRange">Standard deviation</label>
+                <input id="standardDeviationNumber" type="number" min="0.1" max="80" step="0.1" value="12">
+              </div>
+              <input id="standardDeviationRange" type="range" min="0.1" max="80" step="0.1" value="12">
+            </div>
+
+            <div class="range-field">
+              <div class="range-label">
+                <label for="sampleSizeMeanRange">Sample size</label>
+                <input id="sampleSizeMeanNumber" type="number" min="2" max="500" step="1" value="64">
+              </div>
+              <input id="sampleSizeMeanRange" type="range" min="2" max="500" step="1" value="64">
+            </div>
+          </div>
+
+          <div id="proportionControls" class="hidden">
+            <div class="range-field">
+              <div class="range-label">
+                <label for="benchmarkProportionRange">Benchmark proportion</label>
+                <input id="benchmarkProportionNumber" type="number" min="0.01" max="0.99" step="0.01" value="0.50">
+              </div>
+              <input id="benchmarkProportionRange" type="range" min="0.01" max="0.99" step="0.01" value="0.50">
+            </div>
+
+            <div class="range-field">
+              <div class="range-label">
+                <label for="sampleProportionRange">Sample proportion</label>
+                <input id="sampleProportionNumber" type="number" min="0.01" max="0.99" step="0.01" value="0.62">
+              </div>
+              <input id="sampleProportionRange" type="range" min="0.01" max="0.99" step="0.01" value="0.62">
+            </div>
+
+            <div class="range-field">
+              <div class="range-label">
+                <label for="sampleSizeProportionRange">Sample size</label>
+                <input id="sampleSizeProportionNumber" type="number" min="10" max="1000" step="1" value="120">
+              </div>
+              <input id="sampleSizeProportionRange" type="range" min="10" max="1000" step="1" value="120">
+            </div>
+          </div>
+        </section>
+
+        <section class="card result-card" aria-label="Manual calculator results">
+          <div class="card-header">
+            <h3>Results</h3>
+            <p>Normal curve, p-value area, critical region, and decision.</p>
+          </div>
+
+          <div class="metrics">
+            <div class="metric">
+              <span>z statistic</span>
+              <strong id="manualZ">0.00</strong>
+            </div>
+            <div class="metric">
+              <span>p-value</span>
+              <strong id="manualP">0.0000</strong>
+            </div>
+            <div class="metric">
+              <span>critical value</span>
+              <strong id="manualCritical">0.00</strong>
+            </div>
+            <div class="metric decision">
+              <span>decision</span>
+              <strong id="manualDecision">Decision</strong>
+            </div>
+          </div>
+
+          <canvas id="manualCanvas" width="900" height="420" aria-label="Manual normal distribution graph"></canvas>
+          <p class="conclusion" id="manualConclusion"></p>
+        </section>
+      </div>
+    </section>
+
+    <section class="mode-panel" id="csvMode" role="tabpanel" aria-labelledby="csvTab">
+      <div class="section-heading">
+        <p class="eyebrow">C9 CSV Mode</p>
+        <h2>CSV Analysis Section</h2>
+      </div>
+
+      <div class="app-grid">
+        <section class="card controls-card" aria-label="CSV inputs">
+          <div class="card-header">
+            <h3>CSV Upload</h3>
+            <p>Upload a CSV file and compare two selected groups or columns.</p>
+          </div>
+
+          <div class="downloads">
+            <a href="example_mean_data.csv" download>Download mean example</a>
+            <a href="example_proportion_data.csv" download>Download proportion example</a>
+          </div>
+
+          <label class="file-drop" for="csvFile">
+            <span>Choose CSV file</span>
+            <input id="csvFile" type="file" accept=".csv,text/csv">
+          </label>
+
+          <div class="segmented" aria-label="CSV test type">
+            <button class="segment active" type="button" data-csv-test="mean">Mean CSV</button>
+            <button class="segment" type="button" data-csv-test="proportion">Proportion CSV</button>
+          </div>
+
+          <label class="field">
+            <span>Test direction</span>
+            <select id="csvDirection">
+              <option value="left">Left-tailed</option>
+              <option value="right" selected>Right-tailed</option>
+              <option value="two">Two-tailed</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Significance level alpha</span>
+            <select id="csvAlpha">
+              <option value="0.10">0.10</option>
+              <option value="0.05" selected>0.05</option>
+              <option value="0.01">0.01</option>
+            </select>
+          </label>
+
+          <div id="csvColumnSelectors">
+            <label class="field">
+              <span>Benchmark group</span>
+              <select id="benchmarkGroup"></select>
+            </label>
+
+            <label class="field">
+              <span>Test group</span>
+              <select id="testGroup"></select>
+            </label>
+          </div>
+
+          <div id="proportionColumnSelectors" class="hidden">
+            <label class="field">
+              <span>Group column</span>
+              <select id="groupColumn"></select>
+            </label>
+
+            <label class="field">
+              <span>Success column</span>
+              <select id="successColumn"></select>
+            </label>
+
+            <label class="field">
+              <span>Benchmark group</span>
+              <select id="benchmarkCategory"></select>
+            </label>
+
+            <label class="field">
+              <span>Test group</span>
+              <select id="testCategory"></select>
+            </label>
+          </div>
+
+          <p class="status" id="csvStatus">Upload a CSV file to begin.</p>
+        </section>
+
+        <section class="card result-card" aria-label="CSV results">
+          <div class="card-header">
+            <h3>CSV Results</h3>
+            <p>Detected data summary and hypothesis test result.</p>
+          </div>
+
+          <div class="summary-table" id="csvSummary"></div>
+
+          <div class="metrics">
+            <div class="metric">
+              <span>z statistic</span>
+              <strong id="csvZ">--</strong>
+            </div>
+            <div class="metric">
+              <span>p-value</span>
+              <strong id="csvP">--</strong>
+            </div>
+            <div class="metric">
+              <span>decision</span>
+              <strong id="csvDecision">--</strong>
+            </div>
+          </div>
+
+          <canvas id="csvCanvas" width="900" height="420" aria-label="CSV normal distribution graph"></canvas>
+          <p class="conclusion" id="csvConclusion">CSV results will appear after data is loaded.</p>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Client-side HTML, CSS, and JavaScript project for local use and GitHub Pages.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
